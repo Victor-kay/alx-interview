@@ -26,3 +26,17 @@ def pascal_triangle(n):
         triangle.append(new_row)
 
     return triangle
+
+# For testing
+def print_triangle(triangle):
+    """
+    Print the triangle
+    """
+    for row in triangle:
+        print("[{}]".format(",".join([str(x) for x in row])))
+
+# Test cases
+if __name__ == "__main__":
+    for n in [5, 1, 0, 10, 100]:
+        print(f"Correct output: n = {n}")
+        print_triangle(pascal_triangle(n))
