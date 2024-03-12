@@ -1,29 +1,29 @@
 #!/usr/bin/python3
 
 def canUnlockAll(boxes):
-    if not boxes:
-        return False
+    # Set to store keys we have
+    keys = set([0])  # We start with the key to the first box
+    # Set to store boxes we can open
+    openable_boxes = set([0])
 
-    # Initialize a set to keep track of visited boxes
-    visited = set()
+    while openable_boxes:
+        # Pop a box from the set of openable boxes
+        box = openable_boxes.pop()
+        # Get keys in the current box
+        box_keys = boxes[box]
 
-    # Initialize a queue for BFS traversal
-    queue = [0]
+        # Try to open all the boxes with the keys we have
+        for key in box_keys:
+            if key not in keys:
+                # If we haven't used this key before, add it to keys
+                keys.add(key)
+                # Add the box corresponding to this key to openable_boxes
+                openable_boxes.add(key)
 
-    # Mark the first box as visited
-    visited.add(0)
+    # If all boxes have been opened, return True
+    return len(keys) == len(boxes)
 
-    # Perform BFS traversal
-    while queue:
-        current_box = queue.pop(0)
-        for key in boxes[current_box]:
-            if key < len(boxes) and key not in visited:
-                visited.add(key)
-                queue.append(key)
-
-    # If all boxes have been visited, return True
-    return len(visited) == len(boxes)
-
+# Testing the function
 if __name__ == "__main__":
     boxes1 = [[1], [2], [3], [4], []]
     print(canUnlockAll(boxes1))  # Output: True
