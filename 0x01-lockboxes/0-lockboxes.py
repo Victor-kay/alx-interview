@@ -4,7 +4,7 @@ Determines if all the boxes can be opened.
 """
 
 
-def can_unlock_all(boxes):
+def canUnlockAll(boxes):
     """
     Determines if all the boxes can be opened.
 
@@ -35,10 +35,10 @@ def can_unlock_all(boxes):
 # Test cases
 if __name__ == "__main__":
     boxes1 = [[1], [2], [3], [4], []]
-    print(can_unlock_all(boxes1))  # Output: True
+    print(canUnlockAll(boxes1))  # Output: True
 
     boxes2 = [[1, 4, 5], [2], [5, 2], [3], [4, 1], [3, 5]]
-    print(can_unlock_all(boxes2))  # Output: True
+    print(canUnlockAll(boxes2))  # Output: True
 
     boxes3 = [[4, 6], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-    print(can_unlock_all(boxes3))  # Output: False
+    print(canUnlockAll(boxes3))  # Output: False
