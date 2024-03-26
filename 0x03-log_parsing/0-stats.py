@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-
 import sys
-import datetime
+import re
 from collections import defaultdict
 
 def print_statistics(total_size, status_counts):
@@ -10,12 +9,11 @@ def print_statistics(total_size, status_counts):
         print(f"{status_code}: {status_counts[status_code]}")
 
 def parse_line(line):
-    parts = line.split()
-    if len(parts) != 10:
-        return None
-    ip, _, _, _, _, status_code, file_size = parts[:7]
-    if status_code.isdigit():
-        return int(status_code), int(file_size)
+    match = re.match(r'^\d+\.\d+\.\d+\.\d+ - \[(.*?)\] "GET /projects/260 HTTP/1\.1" (\d+) (\d+)$', line)
+    if match:
+        status_code = int(match.group(2))
+        file_size = int(match.group(3))
+        return status_code, file_size
     return None
 
 def main():
