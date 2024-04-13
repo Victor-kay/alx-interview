@@ -3,6 +3,16 @@ import sys
 import re
 
 def print_stats(file_sizes, status_codes):
+    """
+    Print statistics including total file size and number of lines by status code.
+
+    Args:
+    - file_sizes (list): List of file sizes from the log entries.
+    - status_codes (dict): Dictionary containing counts of each status code.
+
+    Returns:
+    - None
+    """
     total_size = sum(file_sizes)
     print("File size: {:d}".format(total_size))
 
@@ -12,6 +22,16 @@ def print_stats(file_sizes, status_codes):
             print("{}: {:d}".format(code, status_codes[code]))
 
 def main():
+    """
+    Main function to read log entries from stdin and compute statistics.
+
+    Reads log entries line by line from stdin.
+    Computes statistics for total file size and number of lines by status code.
+    Prints statistics after every 10 lines or a keyboard interruption.
+
+    Returns:
+    - None
+    """
     file_sizes = []
     status_codes = {
         '200': 0,
