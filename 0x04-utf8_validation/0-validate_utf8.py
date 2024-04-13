@@ -3,6 +3,7 @@
 Module to determine if a given data set represents a valid UTF-8 encoding.
 """
 
+
 def validUTF8(data):
     """
     Determines if data is a valid UTF-8 encoding.
@@ -13,51 +14,39 @@ def validUTF8(data):
     Returns:
         bool: True if data is a valid UTF-8 encoding, else False.
     """
-    
-    # Helper function to check if a byte starts with '10'
-    def is_follow_byte(byte):
-        return byte & 0b11000000 == 0b10000000
-    
-    # Check the number of follow bytes for each byte in data
     num_follow_bytes = 0
     
     for byte in data:
-        # If there are follow bytes expected but the current byte doesn't start with '10'
         if num_follow_bytes:
-            if not is_follow_byte(byte):
+            if byte >> 6 != 0b10:
                 return False
             num_follow_bytes -= 1
         else:
-            # Determine the number of follow bytes from the current byte
-            mask = 0b10000000
-            while mask & byte:
-                num_follow_bytes += 1
-                mask >>= 1
-            
-            # Single byte character
-            if num_follow_bytes == 1 or num_follow_bytes > 3:
+            if byte >> 7 == 0b0:
+                continue
+            elif byte >> 5 == 0b110:
+                num_follow_bytes = 1
+            elif byte >> 4 == 0b1110:
+                num_follow_bytes = 2
+            elif byte >> 3 == 0b11110:
+                num_follow_bytes = 3
+            else:
                 return False
-                
-            # If there are no follow bytes expected, but the byte starts with '10'
-            if num_follow_bytes == 0 and is_follow_byte(byte):
-                return False
-            
-            # Decrement num_follow_bytes to account for the current byte
-            num_follow_bytes -= 1
-            
-    # If there are still follow bytes expected but the data ends prematurely
-    if num_follow_bytes:
-        return False
-    
-    return True
+    return num_follow_bytes == 0
+
 
 # For testing
 if __name__ == "__main__":
-    data = [65]
-    print(validUTF8(data))  # True
+    test_cases = [
+        ([467, 133, 108], True),
+        ([240, 188, 128, 167], True),
+        ([235, 140], True),
+        ([345, 467], False),
+        ([250, 145, 145, 145, 145], True),
+        ([0, 0, 0, 0, 0, 0], False),
+        ([], True)
+    ]
 
-    data = [80, 121, 116, 104, 111, 110, 32, 105, 115, 32, 99, 111, 111, 108, 33]
-    print(validUTF8(data))  # True
-
-    data = [229, 65, 127, 256]
-    print(validUTF8(data))  # False
+    for data, expected in test_cases:
+        result = validUTF8(data)
+        print(f"Data: {data}, Got: {result}, Expected: {expected}")
