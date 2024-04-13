@@ -1,5 +1,5 @@
 Project: Log Parsing
-Concepts Needed:
+The project revolves around: 
 File I/O in Python:
 
 Understand how to read from sys.stdin line by line.
@@ -24,4 +24,3 @@ Exception Handling:
 
 Handling possible exceptions that may arise during file reading and data processing.
 Python Exceptions
-By studying these concepts and utilizing the resources provided, you will be well-prepared to tackle the log parsing project, effectively handling data streams, parsing log entries, and computing metrics based on the processed data.
