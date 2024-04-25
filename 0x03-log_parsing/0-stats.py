@@ -1,72 +1,53 @@
 #!/usr/bin/python3
+"""Log parsing script"""
+
 import sys
-import re
 
-def print_stats(file_sizes, status_codes):
-    """
-    Print statistics including total file size and number of lines by status code.
-
-    Args:
-    - file_sizes (list): List of file sizes from the log entries.
-    - status_codes (dict): Dictionary containing counts of each status code.
-
-    Returns:
-    - None
-    """
-    total_size = sum(file_sizes)
+def print_metrics(total_size, status_codes):
+    """Print metrics from the beginning"""
     print("File size: {:d}".format(total_size))
-
     sorted_codes = sorted(status_codes.keys())
     for code in sorted_codes:
-        if status_codes[code] > 0:
-            print("{}: {:d}".format(code, status_codes[code]))
+        print("{:d}: {:d}".format(code, status_codes[code]))
+
+def parse_line(line, total_size, status_codes):
+    """Parse a single log line"""
+    try:
+        parts = line.split()
+        if len(parts) < 9 or parts[5] != "\"GET" or parts[6] != "/projects/260":
+            return total_size, status_codes
+        
+        status_code = int(parts[-2])
+        file_size = int(parts[-1])
+        
+        if status_code in [200, 301, 400, 401, 403, 404, 405, 500]:
+            status_codes[status_code] = status_codes.get(status_code, 0) + 1
+        
+        total_size += file_size
+        return total_size, status_codes
+    
+    except ValueError:
+        return total_size, status_codes
 
 def main():
-    """
-    Main function to read log entries from stdin and compute statistics.
-
-    Reads log entries line by line from stdin.
-    Computes statistics for total file size and number of lines by status code.
-    Prints statistics after every 10 lines or a keyboard interruption.
-
-    Returns:
-    - None
-    """
-    file_sizes = []
-    status_codes = {
-        '200': 0,
-        '301': 0,
-        '400': 0,
-        '401': 0,
-        '403': 0,
-        '404': 0,
-        '405': 0,
-        '500': 0
-    }
+    """Main function"""
+    total_size = 0
+    status_codes = {}
     count = 0
-
+    
     try:
         for line in sys.stdin:
             count += 1
-            match = re.match(r"^\d+\.\d+\.\d+\.\d+ - \[.*\] \"GET /projects/260 HTTP/1\.1\" (\d+) (\d+)$", line.strip())
-            if match:
-                status_code, file_size = match.groups()
-                status_code = status_code.strip()
-                file_size = int(file_size.strip())
-
-                if status_code in status_codes:
-                    status_codes[status_code] += 1
-                file_sizes.append(file_size)
-
-            if count == 10:
-                print_stats(file_sizes, status_codes)
-                count = 0
-
-        if file_sizes:
-            print_stats(file_sizes, status_codes)
-
+            if count > 10:
+                print_metrics(total_size, status_codes)
+                count = 1
+            total_size, status_codes = parse_line(line.strip(), total_size, status_codes)
+        
+        if count > 1:
+            print_metrics(total_size, status_codes)
+            
     except KeyboardInterrupt:
-        print_stats(file_sizes, status_codes)
+        print_metrics(total_size, status_codes)
 
 if __name__ == "__main__":
     main()
