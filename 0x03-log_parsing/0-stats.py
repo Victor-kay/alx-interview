@@ -35,7 +35,6 @@ def main():
     """Main function to read and parse log lines"""
     total_size = 0
     status_codes = {}
-    count = 0
     
     try:
         for line in sys.stdin:
@@ -43,14 +42,9 @@ def main():
             if not line:
                 continue
             
-            count += 1
-            if count > 10:
-                print_metrics(total_size, status_codes)
-                count = 1
             total_size, status_codes = parse_line(line, total_size, status_codes)
         
-        if count > 1:
-            print_metrics(total_size, status_codes)
+        print_metrics(total_size, status_codes)
             
     except KeyboardInterrupt:
         print_metrics(total_size, status_codes)
